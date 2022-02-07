@@ -1,0 +1,10 @@
+---
+- name: Playbook para adicionar um repositório
+  hosts: gerenciado
+  become: yes
+  tasks:
+    - name: Add EPEL Repo
+      yum_repository:
+        name: epel
+        description: EPEL YUM repo
+        baseurl: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
