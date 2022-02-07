@@ -1,0 +1,63 @@
+---
+- name: Install backup software
+  hosts: all
+  become: yes
+  tasks:
+    - name: yum command
+      yum:
+        name: linuxacademy-backup-software
+        state: present
+      ignore_errors: yes
+    - name: Populate file with IP addresses
+      lineinfile:
+        path: /root/addresses
+        line: "{{ ansible_facts['all_ipv4_addresses'] }}"
+        create: yes
+      when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Install httpd
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: httpd install
+      yum:
+        name: httpd
+        state: present
+    - name: Service management for httpd
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+    - name: Create and populate index.html
+      lineinfile:
+        path: /var/www/html/index.html
+        line: Waiting for content...
+        create: yes
+        owner: apache
+        group: apache
+        mode: 0644
+
+- name: DB Server management
+  hosts: dbservers
+  become: yes
+  tasks:
+    - name: Add user
+      user:
+        name: dba
+        state: present
+    - name: Copy DB user data
+      copy:
+        src: /root/DBAstuff.txt
+        dest: /home/dba/DBAstuff.txt
+        owner: dba
+        group: dba
+        mode: 0600
+
+- name: Enable devs to easily populate content
+  hosts: webservers:dbservers
+  become: yes
+  tasks:
+    - name: Install git
+      yum:
+        name: git
+        state: present
