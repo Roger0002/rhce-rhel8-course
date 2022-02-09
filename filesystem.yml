@@ -1,0 +1,18 @@
+---
+- name: Playbook demonstrativo do uso do modulo filesystem
+  hosts: gerenciado
+  become: yes
+  tasks:
+    - name: create ext4 filesystem on logical volume
+      filesystem:
+        fstype: ext4
+        dev: /dev/mapper/vg_ansible-lv_ansible
+        force: no # Já é o default.
+
+    - name: mount filesystem
+      mount:
+        path: /mnt/test_mount
+        src: /dev/mapper/vg_ansible-lv_ansible
+        fstype: ext4
+        state: absent
+        backup: yes
