@@ -1,0 +1,24 @@
+---
+- name: Playbook demonstrativo de alguns módulos de segurança (selinux, sefcontext e seboolean)
+  hosts: gerenciado
+  become: yes
+  tasks:
+    - name: set selinux mode to enforcing
+      selinux:
+        policy: targeted
+        state: enforcing
+
+    - name: enable httpd cgi boolean
+      seboolean:
+        name: httpd_enable_cgi
+        state: yes
+        persistent: yes
+
+    - name: set secontext
+      sefcontext:
+        target: '/webcontent(/.*)?'
+        setype: httpd_sys_content_t
+        state: present
+
+    - name: run restorecon
+      command: restorecon -irv /webcontent
