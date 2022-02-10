@@ -1,0 +1,39 @@
+---
+- name: Playbook demonstrativos do uso dos módulos que tratam grupos e usuários
+  hosts: gerenciado
+  become: yes
+  tasks:
+    - name: create groups
+      group:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - students
+        - bayside
+
+    - name: create zach user
+      user:
+        name: zach
+        comment: Zach Morris
+        shell: /bin/sh
+        groups: students,bayside
+        append: yes
+        state: present
+
+    - name: create kelly user
+      user:
+        name: kelly
+        comment: Kelly Kapowski
+        uid: 1050
+        groups: students,bayside
+        append: yes
+        state: present
+
+    - name: create slater user
+      user:
+        name: slater
+        comment: ac Slater
+        uid: 1051
+        groups: students,bayside
+        append: yes
+        state: present
