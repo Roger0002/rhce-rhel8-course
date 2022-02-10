@@ -1,0 +1,16 @@
+---
+- name: Playbook demonstrativo do módulo at
+  become: yes
+  hosts: gerenciado
+  tasks:
+    - name: install at
+      yum:
+        name: at
+        state: latest
+
+    - name: copy httpd error log
+      at:
+        command: cp /var/log/httpd/error_log ~cloud_user/
+        count: 2
+        units: hours
+        state: present

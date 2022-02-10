@@ -1,0 +1,26 @@
+---
+- name: Playbook demonstrativo do módulo cron
+  hosts: gerenciado
+  become: yes
+  tasks:
+    - name: perform a weekly yum update
+      cron:
+        name: "Weekly yum update"
+        minute: "*"
+        hour: "2"
+        day: "*"
+        month: "*"
+        weekday: "0"
+        user: root
+        state: present
+        job: "yum -y update"
+
+    - name: criação de arquivo mensalmente
+      cron:
+        name: "Criação - Monitoração"
+        minute: "0"
+        hour: "0"
+        day: "1"
+        user: root
+        state: present
+        job: ": > /tmp/monitFile"
