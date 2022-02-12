@@ -1,0 +1,14 @@
+---
+- name: Playbook demonstrativo de variáveis
+  hosts: gerenciado
+  become: yes
+  vars_files: /home/cloud_user/ansible-courses/vars/users.yml
+  tasks:
+    - name: create users
+      user:
+        name: "{{ item }}"
+        state: absent
+        remove: yes
+      with_items:
+        - "{{ students }}"
+        - "{{ faculty }}"
