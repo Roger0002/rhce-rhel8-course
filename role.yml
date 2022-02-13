@@ -1,0 +1,7 @@
+---
+- name: Playbook demonstrativo de uso de uma role
+  hosts: gerenciado
+  become: yes
+  roles:
+    - apache
+
