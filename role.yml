@@ -4,4 +4,7 @@
   become: yes
   roles:
     - apache
-
+ 
+# AS LINHAS À SEGUIR SOBRESCREVERIAM A VARIÁVEL DEFINIDA NA ROLE
+# vars:
+#   apache_http_port: 80
