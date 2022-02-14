@@ -7,8 +7,5 @@
     - name: create users
       user:
         name: "{{ item }}"
-        state: absent
-        remove: yes
-      with_items:
-        - "{{ students }}"
-        - "{{ faculty }}"
+        state: present
+      loop: "{{ [students,faculty]|flatten(1) }}"
