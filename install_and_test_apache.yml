@@ -1,0 +1,35 @@
+---
+- name: Playbook que instala e testa o apache
+  hosts: gerenciado
+  become: yes
+  gather_facts: yes
+  tasks:
+    - name: Install apache
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start apache
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: Populate index.html
+      copy:
+        dest: /var/www/html/index.html
+        content: "This is a website made for Roger Príncipe"
+
+    - name: Verify instalation
+      uri:
+        url: http://{{ inventory_hostname }}
+        method: GET
+        timeout: 30
+        status_code: 200
+        return_content: yes
+      delegate_to: localhost
+      register: webresult
+
+    - name: Output from verification
+      debug:
+        var: webresult
