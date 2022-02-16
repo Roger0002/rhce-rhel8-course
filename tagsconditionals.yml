@@ -1,0 +1,65 @@
+---
+# O playbook à seguir é chamado de duas formas possíveis:
+# ansible-playbook -i inventory tagsconditionals.yml --tags=WS --limit=webservers
+# ansible-playbook -i inventory tagsconditionals.yml --tags=BS --limit=backups
+# Sendo que "webservers" e "backups" são grupos no inventário que juntam as máquinas de banco e webservers
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Apache on Webservers
+      yum:
+        state: present
+        name: httpd
+      tags: WS
+
+    - name: Install CSH on Backup servers (required per vendor)
+      yum:
+        state: present
+        name: csh
+      tags: BS
+
+    - name: Configure /var/www/html/index.html
+      copy:
+        dest: "/var/www/html/index.html"
+        content: |
+          This is your new website content.
+          Please replace this with the actual content from the developers before going production.
+      tags: WS
+      register: indexchange
+
+    - name: Create backup software directory (Per vendor, directory must exist before software is installed)
+      file:
+        dest: "/opt/backup"
+        state: directory
+      tags: BS
+
+    - name: Configure backup streams (Per vendor, file must exist before software is installed)
+      copy:
+        dest: "/opt/backup/streams"
+        content: "192"
+      tags: BS
+
+    - name: Restart apache when index changes
+      service:
+        state: restarted
+        name: httpd
+        enabled: yes
+      tags: WS
+      when: indexchange.changed
+
+    - name: Verify webserver is working correctly
+      uri:
+        url: http://{{ inventory_hostname }}
+        method: GET
+        timeout: 30
+        status_code: 200
+        return_content: yes
+      delegate_to: localhost
+      register: result
+      tags: WS
+
+    - name: Show the verification results
+      debug:
+        var: result
+      tags: WS
